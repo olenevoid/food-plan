@@ -1,0 +1,82 @@
+[
+    {
+        "name": "Spaghetti Carbonara",
+        "ingredients": [
+            {
+                "title": "Spaghetti",
+                "portion": "400 g"
+            },
+            {
+                "title": "Pancetta or guanciale",
+                "portion": "150 g"
+            },
+            {
+                "title": "Egg yolks",
+                "portion": "4 pcs"
+            },
+            {
+                "title": "Pecorino Romano cheese",
+                "portion": "100 g"
+            },
+            {
+                "title": "Black pepper",
+                "portion": "to taste"
+            },
+            {
+                "title": "Salt",
+                "portion": "to taste"
+            }
+        ],
+        "instructions": "1. Cut the pancetta into small cubes.\n2. Fry the pancetta over medium heat until golden brown.\n3. Cook the spaghetti in salted water until al dente.\n4. In a bowl, mix egg yolks, grated cheese and black pepper.\n5. Add the cooked spaghetti to the pancetta, remove from heat.\n6. Quickly stir in the egg and cheese mixture, stirring constantly.\n7. Serve immediately, topped with additional cheese and pepper."
+    },
+    {
+        "name": "Classic Caesar Salad",
+        "ingredients": [
+            {
+                "title": "Romaine lettuce",
+                "portion": "2 heads"
+            },
+            {
+                "title": "Chicken breast",
+                "portion": "300 g"
+            },
+            {
+                "title": "Parmesan cheese",
+                "portion": "100 g"
+            },
+            {
+                "title": "Croutons",
+                "portion": "150 g"
+            },
+            {
+                "title": "Olive oil",
+                "portion": "3 tbsp"
+            },
+            {
+                "title": "Anchovy fillets",
+                "portion": "6 pcs"
+            },
+            {
+                "title": "Garlic cloves",
+                "portion": "2 pcs"
+            },
+            {
+                "title": "Egg yolk",
+                "portion": "1 pcs"
+            },
+            {
+                "title": "Dijon mustard",
+                "portion": "1 tsp"
+            },
+            {
+                "title": "Lemon juice",
+                "portion": "2 tbsp"
+            },
+            {
+                "title": "Black pepper",
+                "portion": "to taste"
+            }
+        ],
+        "instructions": "1. Chop the romaine lettuce and place in a large bowl. 2. Season and grill the chicken breast, then slice it. 3. For the dressing, mash anchovies and garlic into a paste. Whisk with egg yolk, Dijon mustard, and lemon juice. Slowly drizzle in olive oil while whisking to create an emulsion. 4. Add most of the grated Parmesan cheese to the dressing and mix. 5. Pour the dressing over the lettuce and toss thoroughly. 6. Top the salad with sliced chicken, croutons, the remaining Parmesan, and a generous grind of black pepper."
+    }
+]

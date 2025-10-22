@@ -1,0 +1,36 @@
+from telegram import Update
+from telegram.ext import ContextTypes
+from .keyboards import get_main_menu_keyboard
+from .callbacks import Callback
+import bot.strings as strings
+import bot.commands as commands
+
+
+CALLBACK_COMMANDS = {
+    Callback.OPTION1: commands.show_option1,
+    Callback.OPTION2: commands.show_option2,
+    Callback.HELP: commands.show_help
+}
+
+
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        strings.WELCOME_MESSAGE,
+        reply_markup=get_main_menu_keyboard()
+    )
+
+
+async def handle_button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    callback = query.data
+
+    command = CALLBACK_COMMANDS.get(callback)
+
+    if command:
+        await command(update, context)
+    #TODO: Добавить обработку на случай несуществующей команды
+
+
+async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print(f"Update {update} caused error {context.error}")
