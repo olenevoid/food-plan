@@ -11,7 +11,7 @@ import demodata.demo_db as db
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     recipe = db.get_recipies()[0]
-    print(recipe)
+
     await query.edit_message_text(
         strings.show_recipe(recipe),
         reply_markup=get_main_menu_keyboard()
