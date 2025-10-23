@@ -8,7 +8,7 @@ import demodata.demo_db as db
 
 
 #Функции будут потом переименованы или заменены. Пока они нужны для проверки кнопок
-async def show_option1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     recipe = db.get_recipies()[0]
     print(recipe)

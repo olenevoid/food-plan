@@ -5,7 +5,7 @@ from .callbacks import Callback
 def get_main_menu_keyboard():
     keyboard = [
         [
-            InlineKeyboardButton("Option 1", callback_data=Callback.OPTION1),
+            InlineKeyboardButton("Показать рецепт", callback_data=Callback.SHOW_RECIPE),
             InlineKeyboardButton("Option 2", callback_data=Callback.OPTION2),
         ],
         [InlineKeyboardButton("Help", callback_data=Callback.HELP)],

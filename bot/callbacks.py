@@ -6,5 +6,5 @@ from enum import StrEnum, auto
 class Callback(StrEnum):
     MENU = auto()
     HELP = auto()
-    OPTION1 = auto()
+    SHOW_RECIPE = auto()
     OPTION2 = auto()

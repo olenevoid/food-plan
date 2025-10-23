@@ -7,7 +7,7 @@ import bot.commands as commands
 
 
 CALLBACK_COMMANDS = {
-    Callback.OPTION1: commands.show_option1,
+    Callback.SHOW_RECIPE: commands.show_recipe,
     Callback.OPTION2: commands.show_option2,
     Callback.HELP: commands.show_help
 }
