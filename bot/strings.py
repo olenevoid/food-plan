@@ -33,10 +33,11 @@ HELP_MESSAGE = (
 
 
 def show_recipe(recipe: dict):
-    text = f"Название: {recipe.get('name')}\n"
-    text += "Ингредиенты:\n\n"
+    text = f"🍳 <b>{recipe.get('name')}</b>\n\n"
+    text += "🛒 <b>Ингредиенты:</b>\n"
     for ingredient in recipe.get("ingredients"):
-        text += f"{ingredient.get('title')} {ingredient.get('portion')}\n"
-    text += recipe.get("instructions")
+        text += f"  • {ingredient.get('title')} - <i>{ingredient.get('portion')}</i>\n"
+    text += f"\n📝 <b>Приготовление:</b>\n\n"
+    text += "❤️ <i>Понравился рецепт? Сохраните его в избранное!</i>"
 
     return text
