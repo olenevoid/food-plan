@@ -38,6 +38,8 @@ def show_recipe(recipe: dict):
     for ingredient in recipe.get("ingredients"):
         text += f"  • {ingredient.get('title')} - <i>{ingredient.get('portion')}</i>\n"
     text += f"\n📝 <b>Приготовление:</b>\n\n"
-    text += "❤️ <i>Понравился рецепт? Сохраните его в избранное!</i>"
+    instructions = recipe.get("instructions", "")
+    text += instructions
+    text += "\n\n❤️ <i>Понравился рецепт? Сохраните его в избранное!</i>"
 
     return text
