@@ -34,9 +34,19 @@ class Subscription:
 
 
 @dataclass
+class DailyRecipe:
+    id: int
+    recipe: Recipe | None
+    history: list[Recipe]
+    limit: int = 3
+    updated_at: datetime | None
+    favorite_recipies: list[Recipe] | None
+    disliked_recipies: list[Recipe] | None
+
+
+@dataclass
 class User:
     id: int
     tg_id: int
-    name: str = None
-    favorite_recipies: list[Recipe] | None
-    disliked_recipies: list[Recipe] | None
+    name: str = ''
+    daily_recipe: DailyRecipe
