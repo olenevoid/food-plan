@@ -5,7 +5,7 @@ DEMO_DATA = 'demodata/demo_db.json'
 
 
 def get_recipies():
-    with open(DEMO_DATA, 'r') as file:
+    with open(DEMO_DATA, "r", encoding="utf-8") as file:
         recipes = json.load(file)
 
     return recipes
