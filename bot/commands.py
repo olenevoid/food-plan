@@ -2,7 +2,7 @@
 
 from telegram import Update
 from telegram.ext import ContextTypes
-from .keyboards import get_main_menu_keyboard
+from .keyboards import get_main_menu_keyboard, get_recipe_keyboard
 import bot.strings as strings
 import demodata.demo_db as db
 
@@ -14,7 +14,7 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         strings.show_recipe(recipe),
-        reply_markup=get_main_menu_keyboard(),
+        reply_markup=get_recipe_keyboard(),
         parse_mode="HTML",
     )
 
@@ -30,4 +30,13 @@ async def show_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.edit_message_text(
         strings.HELP_MESSAGE, reply_markup=get_main_menu_keyboard(), parse_mode="HTML"
+    )
+
+
+async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.edit_message_text(
+        strings.WELCOME_MESSAGE,
+        reply_markup=get_main_menu_keyboard(),
+        parse_mode="HTML",
     )

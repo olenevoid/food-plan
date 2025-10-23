@@ -9,7 +9,8 @@ import bot.commands as commands
 CALLBACK_COMMANDS = {
     Callback.SHOW_RECIPE: commands.show_recipe,
     Callback.OPTION2: commands.show_option2,
-    Callback.HELP: commands.show_help
+    Callback.HELP: commands.show_help,
+    Callback.BACK_TO_MENU: commands.back_to_menu,
 }
 
 

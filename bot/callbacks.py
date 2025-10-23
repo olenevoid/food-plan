@@ -8,3 +8,6 @@ class Callback(StrEnum):
     HELP = auto()
     SHOW_RECIPE = auto()
     OPTION2 = auto()
+    LIKE_RECIPE = auto()
+    DISLIKE_RECIPE = auto()
+    BACK_TO_MENU = auto()
