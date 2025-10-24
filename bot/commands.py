@@ -6,10 +6,15 @@ from .keyboards import get_main_menu_keyboard, get_recipe_keyboard
 import bot.strings as strings
 import demodata.demo_db as db
 import random
+import os
 
 
 async def send_recipe_message(
-    update: Update, context: ContextTypes.DEFAULT_TYPE, text: str, keyboard, image=None
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    text: str,
+    keyboard,
+    image_path=None,
 ):
     """Универсальная функция для отправки сообщений с рецептами."""
     if update.callback_query:
@@ -17,15 +22,16 @@ async def send_recipe_message(
     else:
         chat_id = update.message.chat_id
 
-    if image:
-        # Сообщение с картинкой
-        await context.bot.send_photo(
-            chat_id=chat_id,
-            photo=image,
-            caption=text,
-            reply_markup=keyboard,
-            parse_mode="HTML",
-        )
+    if image_path and os.path.exists(image_path):
+        # Сообщение с картинкой из файла
+        with open(image_path, "rb") as photo:
+            await context.bot.send_photo(
+                chat_id=chat_id,
+                photo=photo,
+                caption=text,
+                reply_markup=keyboard,
+                parse_mode="HTML",
+            )
     else:
         # Обычное текстовое сообщение
         await context.bot.send_message(
@@ -40,12 +46,14 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
 
+    image_path = None
+
     await send_recipe_message(
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
         keyboard=get_recipe_keyboard(3),
-        image=None,
+        image_path=image_path,
     )
 
 
@@ -56,7 +64,7 @@ async def show_option2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context=context,
         text=strings.OPTION2,
         keyboard=get_main_menu_keyboard(),
-        image=None,
+        image_path=None,
     )
 
 
@@ -73,7 +81,7 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context=context,
         text=strings.WELCOME_MESSAGE,
         keyboard=get_main_menu_keyboard(),
-        image=None
+        image_path=None,
     )
 
 
@@ -92,10 +100,12 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
 
+    image_path = None
+
     await send_recipe_message(
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
         keyboard=get_recipe_keyboard(remaining_switches),
-        image=None,
+        image_path=image_path,
     )
