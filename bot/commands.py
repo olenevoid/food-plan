@@ -8,6 +8,31 @@ import demodata.demo_db as db
 import random
 
 
+async def send_recipe_message(
+    update: Update, context: ContextTypes.DEFAULT_TYPE, text: str, keyboard, image=None
+):
+    """Универсальная функция для отправки сообщений с рецептами."""
+    if update.callback_query:
+        chat_id = update.callback_query.message.chat_id
+    else:
+        chat_id = update.message.chat_id
+
+    if image:
+        # Сообщение с картинкой
+        await context.bot.send_photo(
+            chat_id=chat_id,
+            photo=image,
+            caption=text,
+            reply_markup=keyboard,
+            parse_mode="HTML",
+        )
+    else:
+        # Обычное текстовое сообщение
+        await context.bot.send_message(
+            chat_id=chat_id, text=text, reply_markup=keyboard, parse_mode="HTML"
+        )
+
+
 # Функции будут потом переименованы или заменены. Пока они нужны для проверки кнопок
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -15,17 +40,23 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
 
-    await query.message.reply_text(
-        strings.show_recipe(recipe),
-        reply_markup=get_recipe_keyboard(3),
-        parse_mode="HTML",
+    await send_recipe_message(
+        update=update,
+        context=context,
+        text=strings.show_recipe(recipe),
+        keyboard=get_recipe_keyboard(3),
+        image=None,
     )
 
 
 async def show_option2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.message.reply_text(
-        strings.OPTION2, reply_markup=get_main_menu_keyboard(), parse_mode="HTML"
+    await send_recipe_message(
+        update=update,
+        context=context,
+        text=strings.OPTION2,
+        keyboard=get_main_menu_keyboard(),
+        image=None,
     )
 
 
@@ -37,11 +68,12 @@ async def show_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.message.reply_text(
-        strings.WELCOME_MESSAGE,
-        reply_markup=get_main_menu_keyboard(),
-        parse_mode="HTML",
+    await send_recipe_message(
+        update=update,
+        context=context,
+        text=strings.WELCOME_MESSAGE,
+        keyboard=get_main_menu_keyboard(),
+        image=None
     )
 
 
@@ -60,9 +92,10 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
 
-    # Отправляем новое сообщение с рецептом
-    await query.message.reply_text(
-        strings.show_recipe(recipe),
-        reply_markup=get_recipe_keyboard(remaining_switches),
-        parse_mode="HTML",
+    await send_recipe_message(
+        update=update,
+        context=context,
+        text=strings.show_recipe(recipe),
+        keyboard=get_recipe_keyboard(remaining_switches),
+        image=None,
     )
