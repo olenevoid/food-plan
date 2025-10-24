@@ -46,7 +46,11 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
 
-    image_path = None
+    image_path = (
+        db.get_image_path(recipe["image_filename"])
+        if recipe.get("image_filename")
+        else None
+    )
 
     await send_recipe_message(
         update=update,
@@ -100,7 +104,11 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
 
-    image_path = None
+    image_path = (
+        db.get_image_path(recipe["image_filename"])
+        if recipe.get("image_filename")
+        else None
+    )
 
     await send_recipe_message(
         update=update,
