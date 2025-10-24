@@ -11,6 +11,7 @@ CALLBACK_COMMANDS = {
     Callback.OPTION2: commands.show_option2,
     Callback.HELP: commands.show_help,
     Callback.BACK_TO_MENU: commands.back_to_menu,
+    Callback.ANOTHER_RECIPE: commands.another_recipe,
 }
 
 

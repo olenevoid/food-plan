@@ -13,12 +13,31 @@ def get_main_menu_keyboard():
     return InlineKeyboardMarkup(keyboard)
 
 
-def get_recipe_keyboard():
-    keyboard = [
+def get_recipe_keyboard(remaining_switches=3):
+    keyboard = []
+
+    if remaining_switches > 0:
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    f"🔄 Доступно замен ({remaining_switches})",
+                    callback_data=Callback.ANOTHER_RECIPE,
+                )
+            ]
+        )
+    keyboard.extend(
         [
-            InlineKeyboardButton("👍 Лайк", callback_data=Callback.LIKE_RECIPE),
-            InlineKeyboardButton("👎 Дизлайк", callback_data=Callback.DISLIKE_RECIPE),
-        ],
-        [InlineKeyboardButton("📋 Главное меню", callback_data=Callback.BACK_TO_MENU)],
-    ]
+            [
+                InlineKeyboardButton("👍 Лайк", callback_data=Callback.LIKE_RECIPE),
+                InlineKeyboardButton(
+                    "👎 Дизлайк", callback_data=Callback.DISLIKE_RECIPE
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "📋 Главное меню", callback_data=Callback.BACK_TO_MENU
+                )
+            ],
+        ]
+    )
     return InlineKeyboardMarkup(keyboard)

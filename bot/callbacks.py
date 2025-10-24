@@ -11,3 +11,4 @@ class Callback(StrEnum):
     LIKE_RECIPE = auto()
     DISLIKE_RECIPE = auto()
     BACK_TO_MENU = auto()
+    ANOTHER_RECIPE = auto()
