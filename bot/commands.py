@@ -94,6 +94,15 @@ async def send_recipe_message(
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+
+    # Получаем сохраненную информацию о пользователе
+    user_info = context.user_data.get("user_info", {})
+    user_id = user_info.get("user_id")
+    username = user_info.get("username")
+    first_name = user_info.get("first_name")
+
+    print(f"Показываем рецепт для пользователя: {first_name} (ID: {user_id})")
+
     context.user_data["recipe_switches"] = 3
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
