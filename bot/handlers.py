@@ -16,6 +16,23 @@ CALLBACK_COMMANDS = {
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Получаем информацию о пользователе
+    user = update.effective_user
+    chat_id = update.effective_chat.id
+
+    # Сохраняем в user_data
+    context.user_data["user_info"] = {
+        "user_id": user.id,
+        "username": user.username,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "chat_id": chat_id,
+    }
+
+    print(
+        f"Новый пользователь: {user.first_name} (ID: {user.id}, Username: {user.username})"
+    )
+
     await update.message.reply_text(
         strings.WELCOME_MESSAGE,
         reply_markup=get_main_menu_keyboard(),
