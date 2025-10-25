@@ -70,17 +70,18 @@ def show_recipe(recipe: dict):
             f"{ingredient.get('portion_size')} {ingredient.get('portion_type')}"
         )
         text += f"  • {ingredient.get('title')} - <i>{portion_display}</i>\n"
-    text += f"\n📝 <b>Приготовление:</b>\n\n"
-    instructions = recipe.get("instruction", "")
-    text += instructions
 
-    # Расчет общей стоимости
+    # Расчет общей стоимости если есть
     total_price = sum(
         ingredient.get("portion_price", 0)
         for ingredient in recipe.get("ingredient_portions", [])
     )
     if total_price > 0:
-        text += f"\n\n💰 <b>Примерная стоимость:</b> {total_price:.2f} руб."
+        text += f"\n💰 <b>Примерная стоимость:</b> {total_price:.2f} руб.\n"
+
+    text += f"\n📝 <b>Приготовление:</b>\n\n"
+    instructions = recipe.get("instruction", "")
+    text += instructions
 
     # Добавляем надпись только если рецепт не в избранном
     if not recipe.get("is_favorite", False):
