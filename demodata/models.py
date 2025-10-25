@@ -6,6 +6,7 @@ from datetime import datetime
 class PortionType:
     id: int
     title: str
+    title_short: str
 
 
 @dataclass
@@ -30,6 +31,7 @@ class Recipe:
     id: int
     title: str
     instruction: str
+    image_path: str
     ingredients: list[IngredientPortion]
 
 
