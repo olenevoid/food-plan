@@ -1,0 +1,68 @@
+from .models import (
+    Ingredient,
+    IngredientPortion,
+    PortionType,
+    Recipe,
+    DailyRecipe,
+    User
+)
+
+
+def serialize_recipe(
+        recipe: Recipe,
+        ingredient_portions: list[IngredientPortion]
+):
+    serialized_ingredient_portions = []
+
+    for ingredient_portion in ingredient_portions:
+        serialized_ingredient_portions.append(
+            serialize_ingredient_portion(ingredient_portion)
+        )
+
+    serialized_recipe = {
+        'id': recipe.pk,
+        'title': recipe.title,
+        'ingredient_portions': serialized_ingredient_portions,
+        'instruction': recipe.instruction,
+        'image_path': recipe.image.path
+    }
+
+    return serialized_recipe
+
+
+def serialize_ingredient_portion(ingredient_portion: IngredientPortion):
+    serialized_ingredient_portion = {
+        'id': ingredient_portion.pk,
+        'title': ingredient_portion.ingredient.title,
+        'portion_type': ingredient_portion.ingredient.portion_type.title_short,
+        'portion_size': ingredient_portion.portion_size,
+        'portion_price': ingredient_portion.portion_price
+    }
+
+    return serialized_ingredient_portion
+
+
+def serialize_daily_recipe(
+        daily_recipe: DailyRecipe,
+        recipe: Recipe,
+        ingredient_portions: list[IngredientPortion]
+):
+    serialized_recipe = serialize_recipe(recipe, ingredient_portions)
+    serialized_recipe['is_favorite'] = True
+    serialized_recipe['refresh_limit'] = daily_recipe.refresh_limit
+    serialized_recipe['refresh_count'] = daily_recipe.refresh_count
+    serialized_recipe['updated_at'] = daily_recipe.updated_at
+
+    return serialized_recipe
+
+
+def serialize_user(user: User):
+    serialized_user = {
+        'id': user.pk,
+        'name': user.name,
+        'refresh_limit': user.daily_recipe.refresh_limit,
+        'refresh_count': user.daily_recipe.refresh_count,
+        'blacklist_count': user.daily_recipe.disliked_recipes.count()
+    }
+
+    return serialized_user
