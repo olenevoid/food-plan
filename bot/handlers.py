@@ -12,6 +12,7 @@ CALLBACK_COMMANDS = {
     Callback.HELP: commands.show_help,
     Callback.BACK_TO_MENU: commands.back_to_menu,
     Callback.ANOTHER_RECIPE: commands.another_recipe,
+    Callback.CLEAR_BLACKLIST: commands.clear_blacklist,
 }
 
 
@@ -29,13 +30,15 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "chat_id": chat_id,
     }
 
+    context.user_data["blacklist_count"] = 3  # Временное значение для теста
+
     print(
         f"Новый пользователь: {user.first_name} (ID: {user.id}, Username: {user.username})"
     )
 
     await update.message.reply_text(
-        strings.WELCOME_MESSAGE,
-        reply_markup=get_main_menu_keyboard(),
+        strings.get_welcome_message(context.user_data["blacklist_count"]),
+        reply_markup=get_main_menu_keyboard(context.user_data),
         parse_mode="HTML",
     )
 

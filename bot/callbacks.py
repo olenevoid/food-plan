@@ -12,3 +12,4 @@ class Callback(StrEnum):
     DISLIKE_RECIPE = auto()
     BACK_TO_MENU = auto()
     ANOTHER_RECIPE = auto()
+    CLEAR_BLACKLIST = auto()

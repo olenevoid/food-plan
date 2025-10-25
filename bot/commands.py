@@ -29,48 +29,51 @@ async def send_recipe_message(
         # Разделяем текст на название/ингредиенты и инструкцию
         parts = text.split("\n\n📝 <b>Приготовление:</b>\n\n")
         if len(parts) == 2:
-            short_text = (
-                parts[0]
-                + "\n\n📝 <b>Приготовление продолжается в следующем сообщении...</b>"
-            )
+            short_text = parts[0]
             instruction_text = "📝 <b>Приготовление:</b>\n\n" + parts[1]
         else:
             short_text = text[:1000] + "..."
             instruction_text = text[1000:]
 
         if image_path and os.path.exists(image_path):
-            # Отправляем фото с коротким текстом
+            # Отправляем фото с коротким текстом БЕЗ КНОПОК
             with open(image_path, "rb") as photo:
                 message = await context.bot.send_photo(
                     chat_id=chat_id,
                     photo=photo,
                     caption=short_text,
-                    reply_markup=keyboard,
                     parse_mode="HTML",
                 )
                 message_ids.append(message.message_id)
 
-            # Отправляем инструкцию отдельным сообщением
+            # Отправляем инструкцию отдельным сообщением С КНОПКАМИ
             instruction_message = await context.bot.send_message(
-                chat_id=chat_id, text=instruction_text, parse_mode="HTML"
+                chat_id=chat_id,
+                text=instruction_text,
+                reply_markup=keyboard,
+                parse_mode="HTML",
             )
             message_ids.append(instruction_message.message_id)
         else:
-            # Если нет фото, просто отправляем два текстовых сообщения
+            # Если нет фото, отправляем два текстовых сообщения
+            # Первое - без кнопок
             message1 = await context.bot.send_message(
                 chat_id=chat_id,
                 text=short_text,
-                reply_markup=keyboard,
                 parse_mode="HTML",
             )
             message_ids.append(message1.message_id)
 
+            # Второе - с кнопками
             message2 = await context.bot.send_message(
-                chat_id=chat_id, text=instruction_text, parse_mode="HTML"
+                chat_id=chat_id,
+                text=instruction_text,
+                reply_markup=keyboard,
+                parse_mode="HTML",
             )
             message_ids.append(message2.message_id)
     else:
-        # Текст короткий, отправляем как обычно
+        # Текст короткий, отправляем как обычно С КНОПКАМИ
         if image_path and os.path.exists(image_path):
             with open(image_path, "rb") as photo:
                 message = await context.bot.send_photo(
@@ -83,11 +86,29 @@ async def send_recipe_message(
                 message_ids.append(message.message_id)
         else:
             message = await context.bot.send_message(
-                chat_id=chat_id, text=text, reply_markup=keyboard, parse_mode="HTML"
+                chat_id=chat_id,
+                text=text,
+                reply_markup=keyboard,
+                parse_mode="HTML",
             )
             message_ids.append(message.message_id)
 
     return message_ids
+
+
+async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    # Очищаем черный список
+    context.user_data["blacklist_count"] = 0
+
+    # Возвращаем в главное меню с сообщением об успехе
+    await query.edit_message_text(
+        text=strings.get_welcome_message(0) + "\n\n✅ Черный список успешно очищен!",
+        reply_markup=get_main_menu_keyboard(context.user_data),
+        parse_mode="HTML",
+    )
 
 
 # Функции будут потом переименованы или заменены. Пока они нужны для проверки кнопок
@@ -108,16 +129,17 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     recipe = random.choice(recipes)
 
     image_path = (
-        db.get_image_path(recipe["image_filename"])
-        if recipe.get("image_filename")
-        else None
+        db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
     )
+
+    # Статус избранного рецепта
+    is_favorite = recipe.get("is_favorite", False)
 
     message_ids = await send_recipe_message(
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
-        keyboard=get_recipe_keyboard(3),
+        keyboard=get_recipe_keyboard(3, is_favorite),
         image_path=image_path,
     )
 
@@ -131,7 +153,7 @@ async def show_option2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update=update,
         context=context,
         text=strings.OPTION2,
-        keyboard=get_main_menu_keyboard(),
+        keyboard=get_main_menu_keyboard(context.user_data),
         image_path=None,
     )
 
@@ -139,16 +161,19 @@ async def show_option2(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def show_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.edit_message_text(
-        strings.HELP_MESSAGE, reply_markup=get_main_menu_keyboard(), parse_mode="HTML"
+        strings.HELP_MESSAGE,
+        reply_markup=get_main_menu_keyboard(context.user_data),
+        parse_mode="HTML",
     )
 
 
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    blacklist_count = context.user_data.get("blacklist_count", 0)
     await send_recipe_message(
         update=update,
         context=context,
-        text=strings.WELCOME_MESSAGE,
-        keyboard=get_main_menu_keyboard(),
+        text=strings.get_welcome_message(blacklist_count),
+        keyboard=get_main_menu_keyboard(context.user_data),
         image_path=None,
     )
 
@@ -177,16 +202,17 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     recipe = random.choice(recipes)
 
     image_path = (
-        db.get_image_path(recipe["image_filename"])
-        if recipe.get("image_filename")
-        else None
+        db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
     )
+
+    # Статус избранного рецепта
+    is_favorite = recipe.get("is_favorite", False)
 
     message_ids = await send_recipe_message(
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
-        keyboard=get_recipe_keyboard(remaining_switches),
+        keyboard=get_recipe_keyboard(remaining_switches, is_favorite),
         image_path=image_path,
     )
 
