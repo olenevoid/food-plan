@@ -105,7 +105,8 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Возвращаем в главное меню с сообщением об успехе
     await query.edit_message_text(
-        text=strings.get_welcome_message(0) + "\n\n✅ Черный список успешно очищен!",
+        text=strings.get_welcome_message(context.user_data)
+        + "\n\n✅ Черный список успешно очищен!",
         reply_markup=get_main_menu_keyboard(context.user_data),
         parse_mode="HTML",
     )
@@ -124,7 +125,11 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print(f"Показываем рецепт для пользователя: {first_name} (ID: {user_id})")
 
-    context.user_data["recipe_switches"] = 3
+    # Используем систему обновлений вместо recipe_switches
+    refresh_limit = context.user_data.get("refresh_limit", 3)
+    refresh_count = context.user_data.get("refresh_count", 0)
+    remaining_refreshes = refresh_limit - refresh_count
+
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
 
@@ -139,7 +144,7 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
-        keyboard=get_recipe_keyboard(3, is_favorite),
+        keyboard=get_recipe_keyboard(remaining_refreshes, is_favorite),
         image_path=image_path,
     )
 
@@ -168,11 +173,10 @@ async def show_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    blacklist_count = context.user_data.get("blacklist_count", 0)
     await send_recipe_message(
         update=update,
         context=context,
-        text=strings.get_welcome_message(blacklist_count),
+        text=strings.get_welcome_message(context.user_data),
         keyboard=get_main_menu_keyboard(context.user_data),
         image_path=None,
     )
@@ -191,13 +195,16 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
             except Exception as e:
                 print(f"Ошибка при удалении сообщения {message_id}: {e}")
 
-    if "recipe_switches" not in context.user_data:
-        context.user_data["recipe_switches"] = 3
+    # Обновляем счетчик использованных обновлений
+    refresh_limit = context.user_data.get("refresh_limit", 3)
+    refresh_count = context.user_data.get("refresh_count", 0)
 
-    remaining_switches = context.user_data["recipe_switches"] - 1
-    context.user_data["recipe_switches"] = remaining_switches
+    if refresh_count < refresh_limit:
+        refresh_count += 1
+        context.user_data["refresh_count"] = refresh_count
 
-    # Выбираем случайный рецепт
+    remaining_refreshes = refresh_limit - refresh_count
+
     recipes = db.get_recipies()
     recipe = random.choice(recipes)
 
@@ -212,7 +219,7 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
-        keyboard=get_recipe_keyboard(remaining_switches, is_favorite),
+        keyboard=get_recipe_keyboard(remaining_refreshes, is_favorite),
         image_path=image_path,
     )
 
