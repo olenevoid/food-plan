@@ -105,8 +105,7 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Возвращаем в главное меню с сообщением об успехе
     await query.edit_message_text(
-        text=strings.get_welcome_message(context.user_data)
-        + "\n\n✅ Черный список успешно очищен!",
+        text=strings.get_welcome_message(context.user_data, cleared=True),
         reply_markup=get_main_menu_keyboard(context.user_data),
         parse_mode="HTML",
     )
@@ -125,7 +124,6 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print(f"Показываем рецепт для пользователя: {first_name} (ID: {user_id})")
 
-    # Используем систему обновлений вместо recipe_switches
     refresh_limit = context.user_data.get("refresh_limit", 3)
     refresh_count = context.user_data.get("refresh_count", 0)
     remaining_refreshes = refresh_limit - refresh_count
