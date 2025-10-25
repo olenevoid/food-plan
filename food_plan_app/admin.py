@@ -16,7 +16,7 @@ class PortionTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ['title', 'price', 'portion_type', 'default_portion_size']
+    list_display = ['title', 'default_portion_size', 'portion_type', 'price']
     list_filter = ['portion_type']
     search_fields = ['title']
     list_select_related = ['portion_type']
