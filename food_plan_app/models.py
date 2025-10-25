@@ -15,10 +15,10 @@ class PortionType(models.Model):
 
 
 class Ingredient(models.Model):
-    title = models.CharField(max_length=255, verbose_name='Название')
-    price = models.IntegerField(validators=[MinValueValidator(0)], verbose_name='Сокращение')
-    portion_type = models.ForeignKey(PortionType, on_delete=models.CASCADE, verbose_name='Порция')
+    title = models.CharField(max_length=255, verbose_name='Название')        
     default_portion_size = models.IntegerField(validators=[MinValueValidator(1)], verbose_name='Размер порции')
+    portion_type = models.ForeignKey(PortionType, on_delete=models.CASCADE, verbose_name='Единица измерения')
+    price = models.IntegerField(validators=[MinValueValidator(0)], verbose_name='Цена')
     
     class Meta:
         verbose_name = "Ингредиент"
