@@ -57,7 +57,13 @@ HELP_MESSAGE = (
 
 
 def show_recipe(recipe: dict):
-    text = f"🍳 <b>{recipe.get('title')}</b>\n\n"
+    # Добавляем пометку для любимых рецептов
+    if recipe.get("is_favorite", False):
+        text = f"⭐️ 🍳 <b>{recipe.get('title')}</b> ⭐️\n\n"
+        text += "❤️ <i>Этот рецепт в вашем избранном!</i>\n\n"
+    else:
+        text = f"🍳 <b>{recipe.get('title')}</b>\n\n"
+
     text += "🛒 <b>Ингредиенты:</b>\n"
     for ingredient in recipe.get("ingredient_portions", []):
         portion_display = (
@@ -76,6 +82,7 @@ def show_recipe(recipe: dict):
     if total_price > 0:
         text += f"\n\n💰 <b>Примерная стоимость:</b> {total_price:.2f} руб."
 
+    # Добавляем надпись только если рецепт не в избранном
     if not recipe.get("is_favorite", False):
         text += "\n\n❤️ <i>Понравился рецепт? Сохраните его в избранное!</i>"
 
