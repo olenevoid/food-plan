@@ -150,17 +150,6 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["current_recipe_message_ids"] = message_ids
 
 
-async def show_option2(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await send_recipe_message(
-        update=update,
-        context=context,
-        text=strings.OPTION2,
-        keyboard=get_main_menu_keyboard(context.user_data),
-        image_path=None,
-    )
-
-
 async def show_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.edit_message_text(

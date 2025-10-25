@@ -7,11 +7,7 @@ def get_main_menu_keyboard(user_data=None):
         user_data = {}
 
     keyboard = [
-        [
-            InlineKeyboardButton("Показать рецепт", callback_data=Callback.SHOW_RECIPE),
-            InlineKeyboardButton("Option 2", callback_data=Callback.OPTION2),
-        ],
-        [InlineKeyboardButton("Help", callback_data=Callback.HELP)],
+        [InlineKeyboardButton("Показать рецепт", callback_data=Callback.SHOW_RECIPE)]
     ]
 
     blacklist_count = user_data.get("blacklist_count", 0)
