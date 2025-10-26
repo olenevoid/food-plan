@@ -18,13 +18,16 @@ def serialize_recipe(
         serialized_ingredient_portions.append(
             serialize_ingredient_portion(ingredient_portion)
         )
+    image_path = recipe.image.path
+    if not recipe.image:
+        image_path = ''
 
     serialized_recipe = {
         'id': recipe.pk,
         'title': recipe.title,
         'ingredient_portions': serialized_ingredient_portions,
         'instruction': recipe.instruction,
-        'image_path': recipe.image.path
+        'image_path': image_path
     }
 
     return serialized_recipe
@@ -48,7 +51,10 @@ def serialize_daily_recipe(
         ingredient_portions: list[IngredientPortion]
 ):
     serialized_recipe = serialize_recipe(recipe, ingredient_portions)
-    serialized_recipe['is_favorite'] = True
+
+    is_favorite = recipe in daily_recipe.favorite_recipes.all()
+
+    serialized_recipe['is_favorite'] = is_favorite
     serialized_recipe['refresh_limit'] = daily_recipe.refresh_limit
     serialized_recipe['refresh_count'] = daily_recipe.refresh_count
     serialized_recipe['updated_at'] = daily_recipe.updated_at
