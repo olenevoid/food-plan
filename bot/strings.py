@@ -11,6 +11,14 @@ def get_welcome_message(user_data=None, cleared=False):
     if user_data is None:
         user_data = {}
 
+    user_info = user_data.get("user_info", {})
+    first_name = user_info.get("first_name", "")
+
+    if first_name:
+        base_message = f"🍽 <b>Добро пожаловать в FoodPlan, {first_name}!</b>\n\n"
+    else:
+        base_message = "🍽 <b>Добро пожаловать в FoodPlan!</b>\n\n"
+
     blacklist_count = user_data.get("blacklist_count", 0)
     refresh_limit = user_data.get("refresh_limit", 3)
     refresh_count = user_data.get("refresh_count", 0)
@@ -30,7 +38,7 @@ def get_welcome_message(user_data=None, cleared=False):
     if cleared:
         base_message += "✅ <b>Черный список успешно очищен!</b>\n\n"
     elif blacklist_count > 0:
-        base_message += f"🗑️ <b>В черном списке:</b> {blacklist_count} рецепт(ов)\n\n"
+        base_message += f"🗑️ <b>Рецептов в черном списке:</b> {blacklist_count}\n\n"
 
     # Информация об обновлениях
     base_message += f"🔄 <b>Доступно обновлений:</b> {remaining_refreshes}\n\n"
@@ -39,21 +47,6 @@ def get_welcome_message(user_data=None, cleared=False):
         "<i>Ваши оценки помогут нам предлагать рецепты, которые вам понравятся!</i>"
     )
     return base_message
-
-
-OPTION1 = "You selected Option 1"
-
-OPTION2 = "You selected Option 2"
-
-HELP_MESSAGE = (
-    "❓ <b>Помощь по использованию FoodPlan</b>\n\n"
-    "• <b>Показать рецепт</b> - получить рецепт на сегодня\n"
-    "• <b>Option 2</b> - функция\n"
-    "• <b>Help</b> - показать это сообщение\n\n"
-    "📝 <b>Система оценок:</b>\n"
-    "   👍 - понравился рецепт (будем предлагать чаще)\n"
-    "   👎 - не понравился (будем предлагать реже)\n\n"
-)
 
 
 def show_recipe(recipe: dict):

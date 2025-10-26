@@ -14,14 +14,16 @@ def get_main_menu_keyboard(user_data=None):
 
     if blacklist_count > 0:
         button_text = f"🗑️ Очистить черный список ({blacklist_count})"
+        callback_data = Callback.CLEAR_BLACKLIST
     else:
-        button_text = "🗑️ Очистить черный список"
+        button_text = "🗑️ Черный список пуст"
+        callback_data = Callback.CLEAR_BLACKLIST
 
     keyboard.append(
         [
             InlineKeyboardButton(
                 button_text,
-                callback_data=Callback.CLEAR_BLACKLIST,
+                callback_data=callback_data,
             )
         ]
     )

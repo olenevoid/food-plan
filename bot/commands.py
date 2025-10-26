@@ -100,6 +100,14 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    # Проверяем, есть ли что очищать
+    blacklist_count = context.user_data.get("blacklist_count", 0)
+
+    if blacklist_count == 0:
+        # Если черный список уже пуст, просто показываем сообщение
+        await query.answer("Черный список уже пуст!", show_alert=True)
+        return
+
     # Очищаем черный список
     context.user_data["blacklist_count"] = 0
 
@@ -119,8 +127,7 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Получаем сохраненную информацию о пользователе
     user_info = context.user_data.get("user_info", {})
     user_id = user_info.get("user_id")
-    username = user_info.get("username")
-    first_name = user_info.get("first_name")
+    first_name = user_info.get("first_name", "Пользователь")
 
     print(f"Показываем рецепт для пользователя: {first_name} (ID: {user_id})")
 
@@ -148,15 +155,6 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Сохраняем ID сообщений рецепта для возможного удаления
     context.user_data["current_recipe_message_ids"] = message_ids
-
-
-async def show_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.edit_message_text(
-        strings.HELP_MESSAGE,
-        reply_markup=get_main_menu_keyboard(context.user_data),
-        parse_mode="HTML",
-    )
 
 
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
