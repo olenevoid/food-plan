@@ -28,13 +28,14 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "chat_id": chat_id,
     }
 
-    context.user_data["blacklist_count"] = 3  # Временное значение для теста
     context.user_data["refresh_limit"] = 3  # Лимит обновлений
     context.user_data["refresh_count"] = 0  # Использованные обновления
 
     print(
         f"Новый пользователь: {user.first_name} (ID: {user.id}, Username: {user.username})"
     )
+
+    # Здесь будет запрос к БД
 
     await update.message.reply_text(
         strings.get_welcome_message(context.user_data),
