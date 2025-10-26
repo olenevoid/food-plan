@@ -40,6 +40,6 @@ class IngredientPortionInline(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['title', 'image']
+    list_display = ['title', 'image', 'is_available']
     search_fields = ['title']
     inlines = [IngredientPortionInline]

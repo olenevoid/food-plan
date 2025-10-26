@@ -32,6 +32,7 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название')
     instruction = models.TextField(verbose_name='Инструкция')
+    is_available = models.BooleanField(default=True, verbose_name='Доступен')
     image = models.ImageField(
         verbose_name='Картинка',
         upload_to='images/',
