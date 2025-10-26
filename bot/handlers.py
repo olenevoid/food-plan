@@ -8,16 +8,37 @@ import bot.commands as commands
 
 CALLBACK_COMMANDS = {
     Callback.SHOW_RECIPE: commands.show_recipe,
-    Callback.OPTION2: commands.show_option2,
-    Callback.HELP: commands.show_help,
     Callback.BACK_TO_MENU: commands.back_to_menu,
+    Callback.ANOTHER_RECIPE: commands.another_recipe,
+    Callback.CLEAR_BLACKLIST: commands.clear_blacklist,
 }
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Получаем информацию о пользователе
+    user = update.effective_user
+    chat_id = update.effective_chat.id
+
+    # Сохраняем в user_data
+    context.user_data["user_info"] = {
+        "user_id": user.id,
+        "username": user.username,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "chat_id": chat_id,
+    }
+
+    context.user_data["blacklist_count"] = 3  # Временное значение для теста
+    context.user_data["refresh_limit"] = 3  # Лимит обновлений
+    context.user_data["refresh_count"] = 0  # Использованные обновления
+
+    print(
+        f"Новый пользователь: {user.first_name} (ID: {user.id}, Username: {user.username})"
+    )
+
     await update.message.reply_text(
-        strings.WELCOME_MESSAGE,
-        reply_markup=get_main_menu_keyboard(),
+        strings.get_welcome_message(context.user_data),
+        reply_markup=get_main_menu_keyboard(context.user_data),
         parse_mode="HTML",
     )
 
