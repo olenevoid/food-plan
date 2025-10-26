@@ -56,7 +56,7 @@ class IngredientPortion(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, verbose_name='Ингредиент')
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
     portion_size = models.IntegerField(validators=[MinValueValidator(1)], verbose_name='Размер порции')
-    comment = models.CharField(max_length=255, verbose_name='Комментарий')
+    comment = models.CharField(max_length=255, verbose_name='Комментарий', blank=True)
     
     class Meta:
         verbose_name = "Порция ингредиента"
