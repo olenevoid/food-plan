@@ -11,6 +11,14 @@ def get_welcome_message(user_data=None, cleared=False):
     if user_data is None:
         user_data = {}
 
+    user_info = user_data.get("user_info", {})
+    first_name = user_info.get("first_name", "")
+
+    if first_name:
+        base_message = f"🍽 <b>Добро пожаловать в FoodPlan, {first_name}!</b>\n\n"
+    else:
+        base_message = "🍽 <b>Добро пожаловать в FoodPlan!</b>\n\n"
+
     blacklist_count = user_data.get("blacklist_count", 0)
     refresh_limit = user_data.get("refresh_limit", 3)
     refresh_count = user_data.get("refresh_count", 0)

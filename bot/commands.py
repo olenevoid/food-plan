@@ -127,8 +127,7 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Получаем сохраненную информацию о пользователе
     user_info = context.user_data.get("user_info", {})
     user_id = user_info.get("user_id")
-    username = user_info.get("username")
-    first_name = user_info.get("first_name")
+    first_name = user_info.get("first_name", "Пользователь")
 
     print(f"Показываем рецепт для пользователя: {first_name} (ID: {user_id})")
 
