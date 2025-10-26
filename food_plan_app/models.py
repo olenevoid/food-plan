@@ -105,7 +105,7 @@ class DailyRecipe(models.Model):
         verbose_name_plural = "Ежедневные рецепты"
 
     def __str__(self):
-        return f"Daily Recipe - {self.updated_at.date()}"
+        return f"Daily Recipe - {self.updated_at.date()} {self.user.name}"
 
 
 class User(models.Model):
