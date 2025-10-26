@@ -91,6 +91,16 @@ def update_history(tg_id: int):
     user.daily_recipe.save()
 
 
+def update_refresh_counter(tg_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+    refresh_count = user.daily_recipe.refresh_count + 1
+    if refresh_count >= user.daily_recipe.refresh_limit:
+        refresh_count = user.daily_recipe.refresh_limit
+
+    user.daily_recipe.refresh_count = refresh_count
+    user.daily_recipe.save()
+
+
 def set_new_daily_recipe(tg_id: int):
     user = User.objects.filter(tg_id=tg_id).first()
 
