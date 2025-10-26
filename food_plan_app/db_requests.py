@@ -101,6 +101,12 @@ def update_refresh_counter(tg_id: int):
     user.daily_recipe.save()
 
 
+def reset_refresh_counter(tg_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+    user.daily_recipe.refresh_count = 0
+    user.daily_recipe.save()
+
+
 def set_new_daily_recipe(tg_id: int):
     user = User.objects.filter(tg_id=tg_id).first()
 
