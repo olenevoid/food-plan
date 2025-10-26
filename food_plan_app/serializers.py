@@ -53,8 +53,10 @@ def serialize_daily_recipe(
     serialized_recipe = serialize_recipe(recipe, ingredient_portions)
 
     is_favorite = recipe in daily_recipe.favorite_recipes.all()
+    is_disliked = recipe in daily_recipe.disliked_recipes.all()
 
     serialized_recipe['is_favorite'] = is_favorite
+    serialized_recipe['is_disliked'] = is_disliked
     serialized_recipe['refresh_limit'] = daily_recipe.refresh_limit
     serialized_recipe['refresh_count'] = daily_recipe.refresh_count
     serialized_recipe['updated_at'] = daily_recipe.updated_at
