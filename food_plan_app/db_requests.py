@@ -89,6 +89,17 @@ def update_history(tg_id: int):
     else:
         user.daily_recipe.history.add(user.daily_recipe.recipe)
     user.daily_recipe.save()
+
+
+def set_new_daily_recipe(tg_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+
+    recipe_pool = get_recipe_pool_for_tg_id(tg_id)
+
+    user.daily_recipe.recipe = choice(recipe_pool)
+    user.daily_recipe.save()
+
+
 @transaction.atomic
 def add_user(tg_id: int, name: str):
     daily_recipe = DailyRecipe()
