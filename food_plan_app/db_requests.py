@@ -1,3 +1,9 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'food_plan.settings')
+django.setup()
+
 from .models import (
     Ingredient,
     IngredientPortion,
