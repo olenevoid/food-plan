@@ -26,7 +26,7 @@ class Ingredient(models.Model):
         verbose_name_plural = "Ингредиенты"
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.portion_type.title_short})"
 
 
 class Recipe(models.Model):
