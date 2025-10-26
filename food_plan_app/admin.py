@@ -25,7 +25,7 @@ class IngredientAdmin(admin.ModelAdmin):
 class IngredientPortionInline(admin.TabularInline):
     model = IngredientPortion
     extra = 1
-    fields = ['ingredient', 'portion_size', 'portion_type', 'portion_price']
+    fields = ['ingredient', 'portion_size', 'portion_type', 'portion_price', 'comment']
     readonly_fields = ['portion_price', 'portion_type']
 
     def portion_type(self, obj):
