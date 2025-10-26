@@ -12,7 +12,7 @@ def main():
     app.add_handler(CallbackQueryHandler(handle_button_click))
     
     # Error handler
-    app.add_error_handler(error_handler)
+    #app.add_error_handler(error_handler)
 
     print("Bot is running...")
     app.run_polling()
