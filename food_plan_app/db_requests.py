@@ -146,3 +146,7 @@ def add_disliked_recipe(tg_id: int, recipe_id: int):
     user.daily_recipe.save()
 
 
+def clear_blacklist(tg_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+    user.daily_recipe.disliked_recipes.clear()
+    user.daily_recipe.save()
