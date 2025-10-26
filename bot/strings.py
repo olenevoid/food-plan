@@ -60,7 +60,7 @@ def show_recipe(recipe: dict):
     text += "🛒 <b>Ингредиенты:</b>\n"
     for ingredient in recipe.get("ingredient_portions", []):
         portion_display = (
-            f"{ingredient.get('portion_size')} {ingredient.get('portion_type')}"
+            f"{ingredient.get('portion_size')} {ingredient.get('portion_type')} {ingredient.get('portion_price')} р."
         )
         text += f"  • {ingredient.get('title')} - <i>{portion_display}</i>\n"
 
