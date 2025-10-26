@@ -219,6 +219,18 @@ async def dislike_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await sync_to_async(db.add_disliked_recipe)(chat_id, last_recipe_id)
 
     await show_recipe(update, context)
+
+
+async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    chat_id = update.effective_chat.id
+
+    await sync_to_async(db.clear_blacklist)(chat_id)
+
+    await show_main_menu(update, context)
+
+
 async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     chat_id = update.effective_chat.id
