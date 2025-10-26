@@ -82,6 +82,13 @@ def get_recipe_pool_for_tg_id(tg_id):
     return recipe_pool
 
 
+def update_history(tg_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+    if user.daily_recipe.history.count() > user.daily_recipe.history_limit:
+        user.daily_recipe.history.clear()
+    else:
+        user.daily_recipe.history.add(user.daily_recipe.recipe)
+    user.daily_recipe.save()
 @transaction.atomic
 def add_user(tg_id: int, name: str):
     daily_recipe = DailyRecipe()
