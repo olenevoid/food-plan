@@ -19,11 +19,11 @@ CALLBACK_COMMANDS = {
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id #'55555555555' #update.effective_chat.id
 
-    user = await sync_to_async(db.find_user_by_tg_id)(chat_id)
+    user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
     if not user:
         tg_user = update.effective_user
         await sync_to_async(db.add_user)(chat_id, tg_user.first_name)
-        user = await sync_to_async(db.find_user_by_tg_id)(chat_id)
+        user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
 
     await update.message.reply_text(
         strings.get_welcome_message(user),

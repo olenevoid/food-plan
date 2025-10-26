@@ -42,7 +42,7 @@ def get_serialized_user(pk: int):
     return serializers.serialize_user(user)
 
 
-def find_user_by_tg_id(tg_id: int) -> dict | None:
+def find_serialized_user_by_tg_id(tg_id: int) -> dict | None:
     user = User.objects.filter(tg_id=tg_id).first()
     if user:
         return serializers.serialize_user(user)
