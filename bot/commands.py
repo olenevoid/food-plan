@@ -110,8 +110,6 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.answer("Черный список уже пуст!", show_alert=True)
         return
 
-    
-
     # Для демо просто обнуляем
     context.user_data["blacklist_count"] = 0
 
@@ -147,7 +145,9 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await sync_to_async(db.update_history)(chat_id)
         await sync_to_async(db.set_new_daily_recipe)(chat_id)
         await sync_to_async(db.reset_refresh_counter)(chat_id)
+        recipe = await sync_to_async(db.find_daily_recipe_by_tg_id)(chat_id)
         
+    context.user_data['last_recipe_id'] = recipe.get('id')
 
     image_path = recipe.get('image_path')
 
