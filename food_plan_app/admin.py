@@ -3,9 +3,9 @@ from .models import PortionType, Ingredient, IngredientPortion, Recipe, DailyRec
 
 
 #admin.site.register(PortionType)
-#admin.site.register(IngredientPortion)
-#admin.site.register(DailyRecipe)
-#admin.site.register(User)
+admin.site.register(IngredientPortion)
+admin.site.register(DailyRecipe)
+admin.site.register(User)
 
 
 @admin.register(PortionType)
