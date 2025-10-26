@@ -195,6 +195,30 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 print(f"Ошибка при удалении сообщения {message_id}: {e}")
 
     await show_recipe(update, context)
+
+
+async def like_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    chat_id = update.effective_chat.id
+
+    last_recipe_id = context.user_data.get('last_recipe_id')
+    if last_recipe_id:
+        await sync_to_async(db.add_liked_recipe)(chat_id, last_recipe_id)
+
+    await show_recipe(update, context)
+
+
+async def dislike_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    chat_id = update.effective_chat.id
+
+    last_recipe_id = context.user_data.get('last_recipe_id')
+    if last_recipe_id:
+        await sync_to_async(db.add_disliked_recipe)(chat_id, last_recipe_id)
+
+    await show_recipe(update, context)
 async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     chat_id = update.effective_chat.id

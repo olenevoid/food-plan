@@ -13,6 +13,8 @@ CALLBACK_COMMANDS = {
     Callback.BACK_TO_MENU: commands.back_to_menu,
     Callback.ANOTHER_RECIPE: commands.another_recipe,
     Callback.CLEAR_BLACKLIST: commands.clear_blacklist,
+    Callback.LIKE_RECIPE: commands.like_recipe,
+    Callback.DISLIKE_RECIPE: commands.dislike_recipe
 }
 
 
