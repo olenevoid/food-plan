@@ -146,6 +146,8 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if datetime.now().date() >= updated_at.date() + timedelta(days=1):
         await sync_to_async(db.update_history)(chat_id)
         await sync_to_async(db.set_new_daily_recipe)(chat_id)
+        await sync_to_async(db.reset_refresh_counter)(chat_id)
+        
 
     image_path = recipe.get('image_path')
 
