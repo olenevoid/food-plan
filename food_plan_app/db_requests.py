@@ -64,6 +64,24 @@ def find_daily_recipe_by_tg_id(tg_id: int):
     )
 
 
+def get_recipe_pool_for_tg_id(tg_id):
+    user = User.objects.filter(tg_id=tg_id).first()
+    daily_recipe = user.daily_recipe
+
+    blacklist_ids = daily_recipe.disliked_recipes.values_list('id', flat=True)
+    history_ids = daily_recipe.history.values_list('id', flat=True)
+
+    recipe_pool = list(
+        Recipe.objects.exclude(pk__in=history_ids).exclude(pk__in=blacklist_ids).all()
+    )
+
+    favorite = list(daily_recipe.favorite_recipes.all())
+
+    recipe_pool.extend(favorite)
+
+    return recipe_pool
+
+
 @transaction.atomic
 def add_user(tg_id: int, name: str):
     daily_recipe = DailyRecipe()
