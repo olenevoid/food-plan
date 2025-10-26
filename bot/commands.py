@@ -9,6 +9,7 @@ import random
 import os
 from asgiref.sync import sync_to_async
 from food_plan_app import db_requests as db
+from datetime import datetime, timedelta
 
 
 async def send_recipe_message(
@@ -138,8 +139,13 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     remaining_refreshes = refresh_limit - refresh_count
 
     recipe = await sync_to_async(db.find_daily_recipe_by_tg_id)(chat_id)
+    updated_at: datetime = recipe.get('updated_at')
+
     if not recipe:
-        pass
+        await sync_to_async(db.set_new_daily_recipe)(chat_id)
+    if datetime.now().date() >= updated_at.date() + timedelta(days=1):
+        await sync_to_async(db.update_history)(chat_id)
+        await sync_to_async(db.set_new_daily_recipe)(chat_id)
 
     image_path = recipe.get('image_path')
 
