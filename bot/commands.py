@@ -104,14 +104,14 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
     blacklist_count = context.user_data.get("blacklist_count", 0)
 
     if blacklist_count == 0:
-        # Если черный список уже пуст, просто показываем сообщение
         await query.answer("Черный список уже пуст!", show_alert=True)
         return
 
-    # Очищаем черный список
+    
+
+    # Для демо просто обнуляем
     context.user_data["blacklist_count"] = 0
 
-    # Возвращаем в главное меню с сообщением об успехе
     await query.edit_message_text(
         text=strings.get_welcome_message(context.user_data, cleared=True),
         reply_markup=get_main_menu_keyboard(context.user_data),
@@ -119,7 +119,6 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-# Функции будут потом переименованы или заменены. Пока они нужны для проверки кнопок
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
