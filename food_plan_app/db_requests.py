@@ -130,3 +130,19 @@ def add_user(tg_id: int, name: str):
     new_user.daily_recipe = daily_recipe
 
     new_user.save()
+
+
+def add_liked_recipe(tg_id: int, recipe_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+    recipe = Recipe.objects.get(pk=recipe_id)
+    user.daily_recipe.favorite_recipes.add(recipe)
+    user.daily_recipe.save()
+
+
+def add_disliked_recipe(tg_id: int, recipe_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+    recipe = Recipe.objects.get(pk=recipe_id)
+    user.daily_recipe.disliked_recipes.add(recipe)
+    user.daily_recipe.save()
+
+
