@@ -4,9 +4,11 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from .keyboards import get_main_menu_keyboard, get_recipe_keyboard
 import bot.strings as strings
-import demodata.demo_db as db
+import demodata.demo_db as demo_db
 import random
 import os
+from asgiref.sync import sync_to_async
+from food_plan_app import db_requests as db
 
 
 async def send_recipe_message(
@@ -122,24 +124,27 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    chat_id = '55555555555' #update.effective_chat.id
 
     # Получаем сохраненную информацию о пользователе
-    user_info = context.user_data.get("user_info", {})
-    user_id = user_info.get("user_id")
+    user_info = await sync_to_async(db.find_user_by_tg_id)(chat_id)
+    user_id = user_info.get("id")
     first_name = user_info.get("first_name", "Пользователь")
 
     print(f"Показываем рецепт для пользователя: {first_name} (ID: {user_id})")
 
-    refresh_limit = context.user_data.get("refresh_limit", 3)
-    refresh_count = context.user_data.get("refresh_count", 0)
+    refresh_limit = user_info.get("refresh_limit", 3)
+    refresh_count = user_info.get("refresh_count", 0)
     remaining_refreshes = refresh_limit - refresh_count
 
-    recipes = db.get_recipies()
-    recipe = random.choice(recipes)
+    recipes = demo_db.get_recipies()
+    recipe = await sync_to_async(db.find_daily_recipe_by_tg_id)(chat_id)
 
-    image_path = (
-        db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
-    )
+    image_path = recipe.get('image_path')
+
+    '''image_path = (
+        demo_db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
+    )'''
 
     # Статус избранного рецепта
     is_favorite = recipe.get("is_favorite", False)
@@ -189,11 +194,11 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     remaining_refreshes = refresh_limit - refresh_count
 
-    recipes = db.get_recipies()
+    recipes = demo_db.get_recipies()
     recipe = random.choice(recipes)
 
     image_path = (
-        db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
+        demo_db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
     )
 
     # Статус избранного рецепта
