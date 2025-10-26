@@ -47,7 +47,7 @@ def find_user_by_tg_id(tg_id: int) -> dict | None:
 
 
 def find_daily_recipe_by_tg_id(tg_id: int):
-    user = find_user_by_tg_id(tg_id)
+    user = User.objects.filter(tg_id=tg_id).first()
     if not user:
         return None
 
