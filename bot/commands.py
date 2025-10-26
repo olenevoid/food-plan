@@ -150,15 +150,6 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["current_recipe_message_ids"] = message_ids
 
 
-async def show_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.edit_message_text(
-        strings.HELP_MESSAGE,
-        reply_markup=get_main_menu_keyboard(context.user_data),
-        parse_mode="HTML",
-    )
-
-
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await send_recipe_message(
         update=update,
