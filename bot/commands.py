@@ -153,12 +153,19 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Статус избранного рецепта
     is_favorite = recipe.get("is_favorite", False)
+    is_disliked = recipe.get("is_disliked", False)
+
+    keyboard = get_recipe_keyboard(
+        remaining_refreshes,
+        is_favorite,
+        is_disliked
+    )
 
     message_ids = await send_recipe_message(
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
-        keyboard=get_recipe_keyboard(remaining_refreshes, is_favorite),
+        keyboard=keyboard,
         image_path=image_path,
     )
 
