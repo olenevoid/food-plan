@@ -177,6 +177,11 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    chat_id = update.effective_chat.id
+
+    await sync_to_async(db.update_refresh_counter)(chat_id)
+    await sync_to_async(db.update_history)(chat_id)
+    await sync_to_async(db.set_new_daily_recipe)(chat_id)
 
     # Удаляем все сообщения текущего рецепта
     if "current_recipe_message_ids" in context.user_data:
@@ -187,32 +192,4 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
             except Exception as e:
                 print(f"Ошибка при удалении сообщения {message_id}: {e}")
 
-    # Обновляем счетчик использованных обновлений
-    refresh_limit = context.user_data.get("refresh_limit", 3)
-    refresh_count = context.user_data.get("refresh_count", 0)
-
-    if refresh_count < refresh_limit:
-        refresh_count += 1
-        context.user_data["refresh_count"] = refresh_count
-
-    remaining_refreshes = refresh_limit - refresh_count
-
-    recipes = demo_db.get_recipies()
-    recipe = random.choice(recipes)
-
-    image_path = (
-        demo_db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
-    )
-
-    # Статус избранного рецепта
-    is_favorite = recipe.get("is_favorite", False)
-
-    message_ids = await send_recipe_message(
-        update=update,
-        context=context,
-        text=strings.show_recipe(recipe),
-        keyboard=get_recipe_keyboard(remaining_refreshes, is_favorite),
-        image_path=image_path,
-    )
-
-    context.user_data["current_recipe_message_ids"] = message_ids
+    await show_recipe(update, context)
