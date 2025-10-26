@@ -25,11 +25,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await sync_to_async(db.add_user)(chat_id, tg_user.first_name)
         user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
 
-    await update.message.reply_text(
-        strings.get_welcome_message(user),
-        reply_markup=get_main_menu_keyboard(user),
-        parse_mode="HTML",
-    )
+    await commands.show_main_menu(update, context)
 
 
 async def handle_button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):

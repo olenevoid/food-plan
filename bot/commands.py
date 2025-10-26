@@ -195,3 +195,14 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 print(f"Ошибка при удалении сообщения {message_id}: {e}")
 
     await show_recipe(update, context)
+async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    chat_id = update.effective_chat.id
+    user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=strings.get_welcome_message(user),
+        reply_markup=get_main_menu_keyboard(user),
+        parse_mode="HTML",
+    )
