@@ -2,6 +2,7 @@ import os
 import django
 from django.db import transaction
 from random import choice
+from django.utils import timezone
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'food_plan.settings')
@@ -113,6 +114,7 @@ def set_new_daily_recipe(tg_id: int):
     recipe_pool = get_recipe_pool_for_tg_id(tg_id)
 
     user.daily_recipe.recipe = choice(recipe_pool)
+    user.daily_recipe.updated_at = timezone.now()
     user.daily_recipe.save()
 
 
