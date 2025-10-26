@@ -1,5 +1,8 @@
 import os
 import django
+from django.db import transaction
+from random import choice
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'food_plan.settings')
 django.setup()
@@ -59,3 +62,17 @@ def find_daily_recipe_by_tg_id(tg_id: int):
         recipe,
         ingredient_portions
     )
+
+
+@transaction.atomic
+def add_user(tg_id: int, name: str):
+    daily_recipe = DailyRecipe()
+    daily_recipe.recipe = choice(Recipe.objects.all())
+    daily_recipe.save()
+
+    new_user = User()
+    new_user.tg_id = tg_id
+    new_user.name = name
+    new_user.daily_recipe = daily_recipe
+
+    new_user.save()

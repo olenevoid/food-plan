@@ -124,7 +124,7 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    chat_id = '55555555555' #update.effective_chat.id
+    chat_id = update.effective_chat.id #'55555555555' #update.effective_chat.id
 
     # Получаем сохраненную информацию о пользователе
     user_info = await sync_to_async(db.find_user_by_tg_id)(chat_id)
@@ -137,14 +137,11 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     refresh_count = user_info.get("refresh_count", 0)
     remaining_refreshes = refresh_limit - refresh_count
 
-    recipes = demo_db.get_recipies()
     recipe = await sync_to_async(db.find_daily_recipe_by_tg_id)(chat_id)
+    if not recipe:
+        pass
 
     image_path = recipe.get('image_path')
-
-    '''image_path = (
-        demo_db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
-    )'''
 
     # Статус избранного рецепта
     is_favorite = recipe.get("is_favorite", False)
