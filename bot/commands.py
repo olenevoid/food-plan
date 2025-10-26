@@ -100,6 +100,14 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    # Проверяем, есть ли что очищать
+    blacklist_count = context.user_data.get("blacklist_count", 0)
+
+    if blacklist_count == 0:
+        # Если черный список уже пуст, просто показываем сообщение
+        await query.answer("Черный список уже пуст!", show_alert=True)
+        return
+
     # Очищаем черный список
     context.user_data["blacklist_count"] = 0
 
