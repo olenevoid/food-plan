@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 
 class PortionType(models.Model):
@@ -88,7 +89,7 @@ class DailyRecipe(models.Model):
     history_limit = models.IntegerField(default=5)
     refresh_limit = models.IntegerField(default=3, validators=[MinValueValidator(1)])
     refresh_count = models.IntegerField(default=0)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(db_default=timezone.now())
     favorite_recipes = models.ManyToManyField(
         Recipe, 
         related_name='favorited',
