@@ -72,8 +72,13 @@ def get_recipe_pool_for_tg_id(tg_id):
     blacklist_ids = daily_recipe.disliked_recipes.values_list('id', flat=True)
     history_ids = daily_recipe.history.values_list('id', flat=True)
 
+    available_recipes = Recipe.objects.filter(is_available=True)
+
     recipe_pool = list(
-        Recipe.objects.exclude(pk__in=history_ids).exclude(pk__in=blacklist_ids).all()
+        available_recipes
+        .exclude(pk__in=history_ids)
+        .exclude(pk__in=blacklist_ids)
+        .all()
     )
 
     favorite = list(daily_recipe.favorite_recipes.all())
