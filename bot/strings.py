@@ -30,7 +30,7 @@ def get_welcome_message(user_data=None, cleared=False):
     if cleared:
         base_message += "✅ <b>Черный список успешно очищен!</b>\n\n"
     elif blacklist_count > 0:
-        base_message += f"🗑️ <b>В черном списке:</b> {blacklist_count} рецепт(ов)\n\n"
+        base_message += f"🗑️ <b>Рецептов в черном списке:</b> {blacklist_count}\n\n"
 
     # Информация об обновлениях
     base_message += f"🔄 <b>Доступно обновлений:</b> {remaining_refreshes}\n\n"
