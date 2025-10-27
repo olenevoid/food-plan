@@ -16,8 +16,13 @@ async def send_recipe_message(
     text: str,
     keyboard,
     image_path=None,
+    clear_previous=True,
 ):
     """Универсальная функция для отправки сообщений с рецептами."""
+    # Удаляем предыдущие сообщения, если нужно
+    if clear_previous:
+        await delete_previous_messages(update, context)
+
     if update.callback_query:
         chat_id = update.callback_query.message.chat_id
     else:
@@ -94,7 +99,35 @@ async def send_recipe_message(
             )
             message_ids.append(message.message_id)
 
+    await add_message_to_history(context, message_ids)
+
     return message_ids
+
+
+async def delete_previous_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Удаляет все предыдущие сообщения бота"""
+    if "message_history" in context.user_data:
+        chat_id = update.effective_chat.id
+
+        for message_id in context.user_data["message_history"]:
+            try:
+                await context.bot.delete_message(chat_id, message_id)
+            except Exception as e:
+                print(f"Ошибка при удалении сообщения {message_id}: {e}")
+
+        # Очищаем историю
+        context.user_data["message_history"] = []
+
+
+async def add_message_to_history(context: ContextTypes.DEFAULT_TYPE, message_ids):
+    """Добавляет сообщения в историю для последующего удаления"""
+    if "message_history" not in context.user_data:
+        context.user_data["message_history"] = []
+
+    if isinstance(message_ids, list):
+        context.user_data["message_history"].extend(message_ids)
+    else:
+        context.user_data["message_history"].append(message_ids)
 
 
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -114,7 +147,7 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     remaining_refreshes = refresh_limit - refresh_count
 
     recipe = await sync_to_async(db.find_daily_recipe_by_tg_id)(chat_id)
-    updated_at: datetime = recipe.get('updated_at')
+    updated_at: datetime = recipe.get("updated_at")
 
     if not recipe:
         await sync_to_async(db.set_new_daily_recipe)(chat_id)
@@ -123,20 +156,16 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await sync_to_async(db.set_new_daily_recipe)(chat_id)
         await sync_to_async(db.reset_refresh_counter)(chat_id)
         recipe = await sync_to_async(db.find_daily_recipe_by_tg_id)(chat_id)
-        
-    context.user_data['last_recipe_id'] = recipe.get('id')
 
-    image_path = recipe.get('image_path')
+    context.user_data["last_recipe_id"] = recipe.get("id")
+
+    image_path = recipe.get("image_path")
 
     # Статус избранного рецепта
     is_favorite = recipe.get("is_favorite", False)
     is_disliked = recipe.get("is_disliked", False)
 
-    keyboard = get_recipe_keyboard(
-        remaining_refreshes,
-        is_favorite,
-        is_disliked
-    )
+    keyboard = get_recipe_keyboard(remaining_refreshes, is_favorite, is_disliked)
 
     message_ids = await send_recipe_message(
         update=update,
@@ -146,8 +175,8 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
         image_path=image_path,
     )
 
-    # Сохраняем ID сообщений рецепта для возможного удаления
-    context.user_data["current_recipe_message_ids"] = message_ids
+    # # Сохраняем ID сообщений рецепта для возможного удаления
+    # context.user_data["current_recipe_message_ids"] = message_ids
 
 
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -157,6 +186,7 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=strings.get_welcome_message(context.user_data),
         keyboard=get_main_menu_keyboard(context.user_data),
         image_path=None,
+        clear_previous=True,
     )
 
 
@@ -169,14 +199,14 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await sync_to_async(db.update_history)(chat_id)
     await sync_to_async(db.set_new_daily_recipe)(chat_id)
 
-    # Удаляем все сообщения текущего рецепта
-    if "current_recipe_message_ids" in context.user_data:
-        chat_id = query.message.chat_id
-        for message_id in context.user_data["current_recipe_message_ids"]:
-            try:
-                await context.bot.delete_message(chat_id, message_id)
-            except Exception as e:
-                print(f"Ошибка при удалении сообщения {message_id}: {e}")
+    # # Удаляем все сообщения текущего рецепта
+    # if "current_recipe_message_ids" in context.user_data:
+    #     chat_id = query.message.chat_id
+    #     for message_id in context.user_data["current_recipe_message_ids"]:
+    #         try:
+    #             await context.bot.delete_message(chat_id, message_id)
+    #         except Exception as e:
+    #             print(f"Ошибка при удалении сообщения {message_id}: {e}")
 
     await show_recipe(update, context)
 
@@ -186,7 +216,7 @@ async def like_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     chat_id = update.effective_chat.id
 
-    last_recipe_id = context.user_data.get('last_recipe_id')
+    last_recipe_id = context.user_data.get("last_recipe_id")
     if last_recipe_id:
         await sync_to_async(db.add_liked_recipe)(chat_id, last_recipe_id)
 
@@ -198,7 +228,7 @@ async def dislike_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     chat_id = update.effective_chat.id
 
-    last_recipe_id = context.user_data.get('last_recipe_id')
+    last_recipe_id = context.user_data.get("last_recipe_id")
     if last_recipe_id:
         await sync_to_async(db.add_disliked_recipe)(chat_id, last_recipe_id)
 
@@ -220,9 +250,11 @@ async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
 
-    await context.bot.send_message(
-        chat_id=chat_id,
+    await send_recipe_message(
+        update=update,
+        context=context,
         text=strings.get_welcome_message(user),
-        reply_markup=get_main_menu_keyboard(user),
-        parse_mode="HTML",
+        keyboard=get_main_menu_keyboard(user),
+        image_path=None,
+        clear_previous=True,
     )

@@ -12,7 +12,7 @@ CALLBACK_COMMANDS = {
     Callback.ANOTHER_RECIPE: commands.another_recipe,
     Callback.CLEAR_BLACKLIST: commands.clear_blacklist,
     Callback.LIKE_RECIPE: commands.like_recipe,
-    Callback.DISLIKE_RECIPE: commands.dislike_recipe
+    Callback.DISLIKE_RECIPE: commands.dislike_recipe,
 }
 
 
@@ -24,6 +24,9 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         tg_user = update.effective_user
         await sync_to_async(db.add_user)(chat_id, tg_user.first_name)
         user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+
+    if "message_history" in context.user_data:
+        context.user_data["message_history"] = []
 
     await commands.show_main_menu(update, context)
 
@@ -37,7 +40,7 @@ async def handle_button_click(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     if command:
         await command(update, context)
-    #TODO: Добавить обработку на случай несуществующей команды
+    # TODO: Добавить обработку на случай несуществующей команды
 
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
