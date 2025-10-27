@@ -197,6 +197,15 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     chat_id = update.effective_chat.id
 
+    user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+
+    refresh_limit = user.get("refresh_limit", 3)
+    refresh_count = user.get("refresh_count", 0)
+    remaining_refreshes = refresh_limit - refresh_count
+
+    if remaining_refreshes <= 0:
+        return await show_no_refreshes(update, context)
+
     await sync_to_async(db.update_refresh_counter)(chat_id)
     await sync_to_async(db.update_history)(chat_id)
     await sync_to_async(db.set_new_daily_recipe)(chat_id)
@@ -255,6 +264,23 @@ async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update=update,
         context=context,
         text=strings.get_welcome_message(user),
+        keyboard=get_main_menu_keyboard(user),
+        image_path=None,
+        clear_previous=True,
+    )
+
+
+async def show_no_refreshes(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    chat_id = update.effective_chat.id
+
+    user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+
+    return await send_recipe_message(
+        update=update,
+        context=context,
+        text=strings.NO_REFRESHES,
         keyboard=get_main_menu_keyboard(user),
         image_path=None,
         clear_previous=True,

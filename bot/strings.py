@@ -6,6 +6,9 @@
 # https://core.telegram.org/bots/api#formatting-options
 
 
+NO_REFRESHES = "К сожалению, у вас закончились замены рецептов на сегодня. Завтра вы получите новый бесплатный рецепт и новые бесплатные замены."
+
+
 def get_welcome_message(user_data=None, cleared=False):
     """Формирует приветственное сообщение с информацией о черном списке"""
     if user_data is None:
