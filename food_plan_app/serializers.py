@@ -35,11 +35,12 @@ def serialize_recipe(
 
 def serialize_ingredient_portion(ingredient_portion: IngredientPortion):
     serialized_ingredient_portion = {
-        'id': ingredient_portion.pk,
-        'title': ingredient_portion.ingredient.title,
-        'portion_type': ingredient_portion.ingredient.portion_type.title_short,
-        'portion_size': ingredient_portion.portion_size,
-        'portion_price': round(ingredient_portion.portion_price, 2)
+        "id": ingredient_portion.pk,
+        "title": ingredient_portion.ingredient.title,
+        "portion_type": ingredient_portion.ingredient.portion_type.title_short,
+        "portion_size": ingredient_portion.portion_size,
+        "portion_price": round(ingredient_portion.portion_price, 2),
+        "comment": ingredient_portion.comment,
     }
 
     return serialized_ingredient_portion
