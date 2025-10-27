@@ -99,27 +99,6 @@ async def send_recipe_message(
     return message_ids
 
 
-async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    # Проверяем, есть ли что очищать
-    blacklist_count = context.user_data.get("blacklist_count", 0)
-
-    if blacklist_count == 0:
-        await query.answer("Черный список уже пуст!", show_alert=True)
-        return
-
-    # Для демо просто обнуляем
-    context.user_data["blacklist_count"] = 0
-
-    await query.edit_message_text(
-        text=strings.get_welcome_message(context.user_data, cleared=True),
-        reply_markup=get_main_menu_keyboard(context.user_data),
-        parse_mode="HTML",
-    )
-
-
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
