@@ -56,17 +56,6 @@ def get_recipe_keyboard(remaining_switches=3, is_favorite=False, is_disliked = F
     if reaction_buttons:
         keyboard.append(reaction_buttons)
 
-    '''if not is_favorite:
-        keyboard.extend(
-            [
-                [
-                    InlineKeyboardButton("👍 Лайк", callback_data=Callback.LIKE_RECIPE),
-                    InlineKeyboardButton(
-                        "👎 Дизлайк", callback_data=Callback.DISLIKE_RECIPE
-                    ),
-                ],
-            ]
-        )'''
 
     keyboard.append(
         [InlineKeyboardButton("📋 Главное меню", callback_data=Callback.BACK_TO_MENU)]

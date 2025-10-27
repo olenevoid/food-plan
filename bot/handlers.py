@@ -19,7 +19,7 @@ CALLBACK_COMMANDS = {
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id #'55555555555' #update.effective_chat.id
+    chat_id = update.effective_chat.id
 
     user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
     if not user:

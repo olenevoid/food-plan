@@ -123,7 +123,7 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    chat_id = update.effective_chat.id #'55555555555' #update.effective_chat.id
+    chat_id = update.effective_chat.id
 
     # Получаем сохраненную информацию о пользователе
     user_info = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
