@@ -221,6 +221,7 @@ async def like_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     last_recipe_id = context.user_data.get("last_recipe_id")
     if last_recipe_id:
         await sync_to_async(db.add_liked_recipe)(chat_id, last_recipe_id)
+        await sync_to_async(db.remove_disliked_recipe)(chat_id, last_recipe_id)
 
     await show_recipe(update, context)
 
@@ -233,6 +234,7 @@ async def dislike_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     last_recipe_id = context.user_data.get("last_recipe_id")
     if last_recipe_id:
         await sync_to_async(db.add_disliked_recipe)(chat_id, last_recipe_id)
+        await sync_to_async(db.remove_liked_recipe)(chat_id, last_recipe_id)
 
     await another_recipe(update, context)
 
