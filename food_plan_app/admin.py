@@ -4,8 +4,29 @@ from .models import PortionType, Ingredient, IngredientPortion, Recipe, DailyRec
 
 #admin.site.register(PortionType)
 admin.site.register(IngredientPortion)
-admin.site.register(DailyRecipe)
+#admin.site.register(DailyRecipe)
 admin.site.register(User)
+
+
+@admin.register(DailyRecipe)
+class DailyRecipeAdmin(admin.ModelAdmin):
+    filter_horizontal = ['history', 'favorite_recipes', 'disliked_recipes']
+    
+    list_display = ['__str__', 'updated_at', 'refresh_count', 'refresh_limit', 'history_limit']
+    list_filter = ['updated_at']
+    
+    fieldsets = (
+        (None, {
+            'fields': ('recipe', 'updated_at', 'refresh_count')
+        }),
+        ('Limits', {
+            'fields': ('refresh_limit', 'history_limit')
+        }),
+        ('Recipe Collections', {
+            'fields': ('history', 'favorite_recipes', 'disliked_recipes'),
+            'description': 'Manage recipe collections using the filter interface'
+        }),
+    )
 
 
 @admin.register(PortionType)
