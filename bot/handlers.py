@@ -13,6 +13,7 @@ CALLBACK_COMMANDS = {
     Callback.CLEAR_BLACKLIST: commands.clear_blacklist,
     Callback.LIKE_RECIPE: commands.like_recipe,
     Callback.DISLIKE_RECIPE: commands.dislike_recipe,
+    Callback.REMOVE_LIKE: commands.remove_like
 }
 
 

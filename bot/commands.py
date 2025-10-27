@@ -285,3 +285,14 @@ async def show_no_refreshes(update: Update, context: ContextTypes.DEFAULT_TYPE):
         image_path=None,
         clear_previous=True,
     )
+
+
+async def remove_like(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    chat_id = update.effective_chat.id
+    last_recipe_id = context.user_data.get("last_recipe_id")
+
+    await sync_to_async(db.remove_liked_recipe)(chat_id, last_recipe_id)
+
+    await show_recipe(update, context)
