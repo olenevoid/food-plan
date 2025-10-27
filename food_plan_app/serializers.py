@@ -39,7 +39,7 @@ def serialize_ingredient_portion(ingredient_portion: IngredientPortion):
         'title': ingredient_portion.ingredient.title,
         'portion_type': ingredient_portion.ingredient.portion_type.title_short,
         'portion_size': ingredient_portion.portion_size,
-        'portion_price': ingredient_portion.portion_price
+        'portion_price': round(ingredient_portion.portion_price, 2)
     }
 
     return serialized_ingredient_portion
