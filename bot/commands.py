@@ -4,9 +4,10 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from .keyboards import get_main_menu_keyboard, get_recipe_keyboard
 import bot.strings as strings
-import demodata.demo_db as db
-import random
 import os
+from asgiref.sync import sync_to_async
+from food_plan_app import db_requests as db
+from datetime import datetime, timedelta
 
 
 async def send_recipe_message(
@@ -96,59 +97,52 @@ async def send_recipe_message(
     return message_ids
 
 
-async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    # Проверяем, есть ли что очищать
-    blacklist_count = context.user_data.get("blacklist_count", 0)
-
-    if blacklist_count == 0:
-        await query.answer("Черный список уже пуст!", show_alert=True)
-        return
-
-    
-
-    # Для демо просто обнуляем
-    context.user_data["blacklist_count"] = 0
-
-    await query.edit_message_text(
-        text=strings.get_welcome_message(context.user_data, cleared=True),
-        reply_markup=get_main_menu_keyboard(context.user_data),
-        parse_mode="HTML",
-    )
-
-
 async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    chat_id = update.effective_chat.id
 
     # Получаем сохраненную информацию о пользователе
-    user_info = context.user_data.get("user_info", {})
-    user_id = user_info.get("user_id")
+    user_info = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+    user_id = user_info.get("id")
     first_name = user_info.get("first_name", "Пользователь")
 
     print(f"Показываем рецепт для пользователя: {first_name} (ID: {user_id})")
 
-    refresh_limit = context.user_data.get("refresh_limit", 3)
-    refresh_count = context.user_data.get("refresh_count", 0)
+    refresh_limit = user_info.get("refresh_limit", 3)
+    refresh_count = user_info.get("refresh_count", 0)
     remaining_refreshes = refresh_limit - refresh_count
 
-    recipes = db.get_recipies()
-    recipe = random.choice(recipes)
+    recipe = await sync_to_async(db.find_daily_recipe_by_tg_id)(chat_id)
+    updated_at: datetime = recipe.get('updated_at')
 
-    image_path = (
-        db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
-    )
+    if not recipe:
+        await sync_to_async(db.set_new_daily_recipe)(chat_id)
+    if datetime.now().date() >= updated_at.date() + timedelta(days=1):
+        await sync_to_async(db.update_history)(chat_id)
+        await sync_to_async(db.set_new_daily_recipe)(chat_id)
+        await sync_to_async(db.reset_refresh_counter)(chat_id)
+        recipe = await sync_to_async(db.find_daily_recipe_by_tg_id)(chat_id)
+        
+    context.user_data['last_recipe_id'] = recipe.get('id')
+
+    image_path = recipe.get('image_path')
 
     # Статус избранного рецепта
     is_favorite = recipe.get("is_favorite", False)
+    is_disliked = recipe.get("is_disliked", False)
+
+    keyboard = get_recipe_keyboard(
+        remaining_refreshes,
+        is_favorite,
+        is_disliked
+    )
 
     message_ids = await send_recipe_message(
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
-        keyboard=get_recipe_keyboard(remaining_refreshes, is_favorite),
+        keyboard=keyboard,
         image_path=image_path,
     )
 
@@ -169,6 +163,11 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    chat_id = update.effective_chat.id
+
+    await sync_to_async(db.update_refresh_counter)(chat_id)
+    await sync_to_async(db.update_history)(chat_id)
+    await sync_to_async(db.set_new_daily_recipe)(chat_id)
 
     # Удаляем все сообщения текущего рецепта
     if "current_recipe_message_ids" in context.user_data:
@@ -179,32 +178,51 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
             except Exception as e:
                 print(f"Ошибка при удалении сообщения {message_id}: {e}")
 
-    # Обновляем счетчик использованных обновлений
-    refresh_limit = context.user_data.get("refresh_limit", 3)
-    refresh_count = context.user_data.get("refresh_count", 0)
+    await show_recipe(update, context)
 
-    if refresh_count < refresh_limit:
-        refresh_count += 1
-        context.user_data["refresh_count"] = refresh_count
 
-    remaining_refreshes = refresh_limit - refresh_count
+async def like_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    chat_id = update.effective_chat.id
 
-    recipes = db.get_recipies()
-    recipe = random.choice(recipes)
+    last_recipe_id = context.user_data.get('last_recipe_id')
+    if last_recipe_id:
+        await sync_to_async(db.add_liked_recipe)(chat_id, last_recipe_id)
 
-    image_path = (
-        db.get_image_path(recipe["image_path"]) if recipe.get("image_path") else None
+    await show_recipe(update, context)
+
+
+async def dislike_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    chat_id = update.effective_chat.id
+
+    last_recipe_id = context.user_data.get('last_recipe_id')
+    if last_recipe_id:
+        await sync_to_async(db.add_disliked_recipe)(chat_id, last_recipe_id)
+
+    await show_recipe(update, context)
+
+
+async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    chat_id = update.effective_chat.id
+
+    await sync_to_async(db.clear_blacklist)(chat_id)
+
+    await show_main_menu(update, context)
+
+
+async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    chat_id = update.effective_chat.id
+    user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=strings.get_welcome_message(user),
+        reply_markup=get_main_menu_keyboard(user),
+        parse_mode="HTML",
     )
-
-    # Статус избранного рецепта
-    is_favorite = recipe.get("is_favorite", False)
-
-    message_ids = await send_recipe_message(
-        update=update,
-        context=context,
-        text=strings.show_recipe(recipe),
-        keyboard=get_recipe_keyboard(remaining_refreshes, is_favorite),
-        image_path=image_path,
-    )
-
-    context.user_data["current_recipe_message_ids"] = message_ids

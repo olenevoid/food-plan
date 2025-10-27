@@ -1,9 +1,9 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from .keyboards import get_main_menu_keyboard
 from .callbacks import Callback
-import bot.strings as strings
 import bot.commands as commands
+from asgiref.sync import sync_to_async
+from food_plan_app import db_requests as db
 
 
 CALLBACK_COMMANDS = {
@@ -11,37 +11,21 @@ CALLBACK_COMMANDS = {
     Callback.BACK_TO_MENU: commands.back_to_menu,
     Callback.ANOTHER_RECIPE: commands.another_recipe,
     Callback.CLEAR_BLACKLIST: commands.clear_blacklist,
+    Callback.LIKE_RECIPE: commands.like_recipe,
+    Callback.DISLIKE_RECIPE: commands.dislike_recipe
 }
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Получаем информацию о пользователе
-    user = update.effective_user
     chat_id = update.effective_chat.id
 
-    # Сохраняем в user_data
-    context.user_data["user_info"] = {
-        "user_id": user.id,
-        "username": user.username,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "chat_id": chat_id,
-    }
+    user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+    if not user:
+        tg_user = update.effective_user
+        await sync_to_async(db.add_user)(chat_id, tg_user.first_name)
+        user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
 
-    context.user_data["refresh_limit"] = 3  # Лимит обновлений
-    context.user_data["refresh_count"] = 0  # Использованные обновления
-
-    print(
-        f"Новый пользователь: {user.first_name} (ID: {user.id}, Username: {user.username})"
-    )
-
-    # Здесь будет запрос к БД
-
-    await update.message.reply_text(
-        strings.get_welcome_message(context.user_data),
-        reply_markup=get_main_menu_keyboard(context.user_data),
-        parse_mode="HTML",
-    )
+    await commands.show_main_menu(update, context)
 
 
 async def handle_button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):

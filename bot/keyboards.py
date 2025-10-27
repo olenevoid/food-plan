@@ -31,7 +31,7 @@ def get_main_menu_keyboard(user_data=None):
     return InlineKeyboardMarkup(keyboard)
 
 
-def get_recipe_keyboard(remaining_switches=3, is_favorite=False):
+def get_recipe_keyboard(remaining_switches=3, is_favorite=False, is_disliked = False):
     keyboard = []
 
     if remaining_switches > 0:
@@ -45,18 +45,17 @@ def get_recipe_keyboard(remaining_switches=3, is_favorite=False):
         )
 
     # Отображение лайка/дизлайка только если рецепт не в избранном
+    reaction_buttons = []
 
     if not is_favorite:
-        keyboard.extend(
-            [
-                [
-                    InlineKeyboardButton("👍 Лайк", callback_data=Callback.LIKE_RECIPE),
-                    InlineKeyboardButton(
-                        "👎 Дизлайк", callback_data=Callback.DISLIKE_RECIPE
-                    ),
-                ],
-            ]
-        )
+        reaction_buttons.append(InlineKeyboardButton("👍 Лайк", callback_data=Callback.LIKE_RECIPE))
+
+    if not is_disliked:
+        reaction_buttons.append(InlineKeyboardButton("👎 Дизлайк", callback_data=Callback.DISLIKE_RECIPE))
+
+    if reaction_buttons:
+        keyboard.append(reaction_buttons)
+
 
     keyboard.append(
         [InlineKeyboardButton("📋 Главное меню", callback_data=Callback.BACK_TO_MENU)]
