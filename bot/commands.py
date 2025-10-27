@@ -4,8 +4,6 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from .keyboards import get_main_menu_keyboard, get_recipe_keyboard
 import bot.strings as strings
-import demodata.demo_db as demo_db
-import random
 import os
 from asgiref.sync import sync_to_async
 from food_plan_app import db_requests as db

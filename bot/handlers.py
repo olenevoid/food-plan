@@ -1,8 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from .keyboards import get_main_menu_keyboard
 from .callbacks import Callback
-import bot.strings as strings
 import bot.commands as commands
 from asgiref.sync import sync_to_async
 from food_plan_app import db_requests as db
