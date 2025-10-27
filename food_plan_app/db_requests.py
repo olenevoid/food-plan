@@ -144,10 +144,24 @@ def add_liked_recipe(tg_id: int, recipe_id: int):
     user.daily_recipe.save()
 
 
+def remove_liked_recipe(tg_id: int, recipe_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+    recipe = Recipe.objects.get(pk=recipe_id)
+    user.daily_recipe.favorite_recipes.remove(recipe)
+    user.daily_recipe.save()
+
+
 def add_disliked_recipe(tg_id: int, recipe_id: int):
     user = User.objects.filter(tg_id=tg_id).first()
     recipe = Recipe.objects.get(pk=recipe_id)
     user.daily_recipe.disliked_recipes.add(recipe)
+    user.daily_recipe.save()
+
+
+def remove_disliked_recipe(tg_id: int, recipe_id: int):
+    user = User.objects.filter(tg_id=tg_id).first()
+    recipe = Recipe.objects.get(pk=recipe_id)
+    user.daily_recipe.disliked_recipes.remove(recipe)
     user.daily_recipe.save()
 
 
