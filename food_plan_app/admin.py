@@ -2,9 +2,7 @@ from django.contrib import admin
 from .models import PortionType, Ingredient, IngredientPortion, Recipe, DailyRecipe, User
 
 
-#admin.site.register(PortionType)
 admin.site.register(IngredientPortion)
-#admin.site.register(DailyRecipe)
 admin.site.register(User)
 
 
