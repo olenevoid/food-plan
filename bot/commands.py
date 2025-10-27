@@ -178,11 +178,15 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+
+    user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+
     await send_recipe_message(
         update=update,
         context=context,
-        text=strings.get_welcome_message(context.user_data),
-        keyboard=get_main_menu_keyboard(context.user_data),
+        text=strings.get_welcome_message(user),
+        keyboard=get_main_menu_keyboard(user),
         image_path=None,
         clear_previous=True,
     )
@@ -231,11 +235,19 @@ async def clear_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await sync_to_async(db.clear_blacklist)(chat_id)
 
-    await show_main_menu(update, context)
+    user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
+
+    await send_recipe_message(
+        update=update,
+        context=context,
+        text=strings.get_welcome_message(user, cleared=True),
+        keyboard=get_main_menu_keyboard(user),
+        image_path=None,
+        clear_previous=True,
+    )
 
 
 async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     chat_id = update.effective_chat.id
     user = await sync_to_async(db.find_serialized_user_by_tg_id)(chat_id)
 
