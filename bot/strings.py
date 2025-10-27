@@ -59,10 +59,12 @@ def show_recipe(recipe: dict):
 
     text += "🛒 <b>Ингредиенты:</b>\n"
     for ingredient in recipe.get("ingredient_portions", []):
-        portion_display = (
-            f"{ingredient.get('portion_size')} {ingredient.get('portion_type')} {ingredient.get('portion_price')} р."
-        )
-        text += f"  • {ingredient.get('title')} - <i>{portion_display}</i>\n"
+        portion_display = f"{ingredient.get('portion_size')} {ingredient.get('portion_type')} {ingredient.get('portion_price')} р."
+        comment = ingredient.get("comment", "")
+        if comment and comment.strip():  # Проверяем, что комментарий не пустой
+            text += f"  • {ingredient.get('title')} - <i>{portion_display}</i>\n     <i>💡 {comment}</i>\n"
+        else:
+            text += f"  • {ingredient.get('title')} - <i>{portion_display}</i>\n"
 
     # Расчет общей стоимости если есть
     total_price = sum(
