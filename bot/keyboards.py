@@ -49,6 +49,8 @@ def get_recipe_keyboard(remaining_switches=3, is_favorite=False, is_disliked = F
 
     if not is_favorite:
         reaction_buttons.append(InlineKeyboardButton("👍 Лайк", callback_data=Callback.LIKE_RECIPE))
+    else:
+        reaction_buttons.append(InlineKeyboardButton("👍 Убрать лайк", callback_data=Callback.REMOVE_LIKE))
 
     if not is_disliked:
         reaction_buttons.append(InlineKeyboardButton("👎 Дизлайк", callback_data=Callback.DISLIKE_RECIPE))

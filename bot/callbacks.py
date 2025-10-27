@@ -11,3 +11,4 @@ class Callback(StrEnum):
     BACK_TO_MENU = auto()
     ANOTHER_RECIPE = auto()
     CLEAR_BLACKLIST = auto()
+    REMOVE_LIKE = auto()
