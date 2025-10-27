@@ -167,16 +167,14 @@ async def show_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = get_recipe_keyboard(remaining_refreshes, is_favorite, is_disliked)
 
-    message_ids = await send_recipe_message(
+    await send_recipe_message(
         update=update,
         context=context,
         text=strings.show_recipe(recipe),
         keyboard=keyboard,
         image_path=image_path,
+        clear_previous=True,
     )
-
-    # # Сохраняем ID сообщений рецепта для возможного удаления
-    # context.user_data["current_recipe_message_ids"] = message_ids
 
 
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -198,15 +196,6 @@ async def another_recipe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await sync_to_async(db.update_refresh_counter)(chat_id)
     await sync_to_async(db.update_history)(chat_id)
     await sync_to_async(db.set_new_daily_recipe)(chat_id)
-
-    # # Удаляем все сообщения текущего рецепта
-    # if "current_recipe_message_ids" in context.user_data:
-    #     chat_id = query.message.chat_id
-    #     for message_id in context.user_data["current_recipe_message_ids"]:
-    #         try:
-    #             await context.bot.delete_message(chat_id, message_id)
-    #         except Exception as e:
-    #             print(f"Ошибка при удалении сообщения {message_id}: {e}")
 
     await show_recipe(update, context)
 
